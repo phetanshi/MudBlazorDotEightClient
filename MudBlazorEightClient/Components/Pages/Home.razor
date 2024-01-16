@@ -1,0 +1,64 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Forms;
+@inject ISnackbar Snackbar
+@rendermode InteractiveServer
+
+
+<PageTitle>.NET 8 - Home</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
+<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
+
+<MudSelect T="SkillDto" @bind-Value="selectedSkill" Label="Select Skill" Variant="Variant.Outlined" Clearable>
+    @foreach (var skill in skillList)
+    {
+        <MudSelectItem Value="@skill">@skill.Name</MudSelectItem>
+    }
+</MudSelect>
+
+@* <MudGrid>
+    <MudItem xs="12" sm="12">
+        <EditForm Model="@EmployeeSkill" OnValidSubmit="@OnValidFormSubmit" FormName="AddEmployeeSkillForm">
+            <DataAnnotationsValidator />
+            <MudPaper Class="pa-4" sm="12">
+
+                <MudSelect T="SkillDto" @bind-Value="selectedSkill" Label="Select Skill" Variant="Variant.Outlined" Clearable>
+                    @foreach (var skill in skillList)
+                    {
+                        <MudSelectItem Value="@skill">@skill.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                <div class="d-flex mt-1">
+                    <MudNumericField Label="Experience  (In Years)" @bind-Value="EmployeeSkill.YearsOfExpInTheSkill" For="@(() => EmployeeSkill.YearsOfExpInTheSkill)" Variant="Variant.Text" Min="0" Max="60" />
+                    <MudNumericField Label="Experience  (In Months)" @bind-Value="EmployeeSkill.MonthsOfExpInTheSkill" For="@(() => EmployeeSkill.MonthsOfExpInTheSkill)" Variant="Variant.Text" Min="0" Max="12" />
+                </div>
+
+                <div class="mt-1">
+                    <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+                </div>
+            </MudPaper>
+        </EditForm>
+    </MudItem>
+</MudGrid> *@
+
+@code {
+    private SkillDto selectedSkill;
+    private List<SkillDto> skillList = new List<SkillDto>();
+
+    private EmployeeSkillCreateDto? EmployeeSkill = new EmployeeSkillCreateDto();
+    private EmployeeSkillDto? empSkillDto;
+
+    protected override async Task OnInitializedAsync()
+    {
+        MockClient client = new MockClient();
+        skillList = await client.GetSkills();
+    }
+
+    private async Task OnValidFormSubmit(EditContext context)
+    {
+        if (selectedSkill is not null)
+            Snackbar.Add($"Selected Value : {selectedSkill.Id}", Severity.Success);
+        else
+            Snackbar.Add($"No option selected", Severity.Error);
+    }
+}
